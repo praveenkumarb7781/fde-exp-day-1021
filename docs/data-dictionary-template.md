@@ -2,6 +2,8 @@
 
 Fill this in as you explore `legacy_bank.db` with `sqlite3`. Two rows are done for you, showing the level of detail expected — not because they're the hardest ones, but so there's a concrete answer key for what "done" looks like.
 
+
+
 ```
 sqlite3 legacy_bank.db
 .schema customers
