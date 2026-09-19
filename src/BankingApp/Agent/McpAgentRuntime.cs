@@ -288,8 +288,20 @@ var tools = (await client.ListToolsAsync()).Cast<AITool>().ToList();
 
         if (message.Contains("transfer", StringComparison.OrdinalIgnoreCase))
         {
-            return tools.Invoke("submit_wire_transfer",
-                JsonSerializer.Deserialize<JsonElement>("{\"fromAccountId\":101,\"toAccountId\":102,\"amount\":2500.00}"));
+            var amount = 2500.00m;
+            var match = System.Text.RegularExpressions.Regex.Match(message, @"\$([\d,]+(?:\.\d{2})?)");
+            if (match.Success &&
+                decimal.TryParse(match.Groups[1].Value.Replace(",", ""),
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var parsed) &&
+                parsed > 0)
+            {
+                amount = parsed;
+            }
+
+            var payload = $"{{\"fromAccountId\":101,\"toAccountId\":102,\"amount\":{amount.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}";
+            return tools.Invoke("submit_wire_transfer", JsonSerializer.Deserialize<JsonElement>(payload));
         }
 
         if (message.Contains("accounts", StringComparison.OrdinalIgnoreCase))
