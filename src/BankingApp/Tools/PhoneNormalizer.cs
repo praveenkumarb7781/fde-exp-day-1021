@@ -11,7 +11,8 @@ public sealed partial class PhoneNormalizer
     /// <summary>Normalizes a US phone number to E.164-ish form: +1XXXXXXXXXX.</summary>
     public string NormalizePhone(string phone)
     {
-        var digits = new string(phone.Where(char.IsDigit).ToArray());
+        var withoutExtension = TrailingExtension().Replace(phone, "");
+        var digits = new string(withoutExtension.Where(char.IsDigit).ToArray());
         if (digits.Length == 10)
         {
             return "+1" + digits;
@@ -24,6 +25,9 @@ public sealed partial class PhoneNormalizer
 
         return "INVALID: expected a 10-digit US phone number";
     }
+
+    [GeneratedRegex(@"(?i)(?:\s*(?:ext\.?|extension|x)\s*\d+)\s*$")]
+    private static partial Regex TrailingExtension();
 
     [GeneratedRegex(@"[^\d+]")]
     private static partial Regex NonNumericChars();
